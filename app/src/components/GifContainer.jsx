@@ -10,13 +10,52 @@ TODO:
 
 import defaultGifs from '../gifs.json';
 import { getGifsBySearch, getTrendingGifs } from '../adapters/giphyAdapters';
+import { useEffect, useState } from 'react'// you added this
+//import { getTrendingGifs } from './adapters/giphyAdapters.js' // you added this
+import GifSearch from './GifSearch'
+
 
 const GifContainer = () => {
+    const [gifs, setGifs] = useState([])
+    const [searchTerm, setSearchTerm] = useState('')
+    useEffect(() => {
+      const fetchTrending = async () => {
+        const trendingGifs = await getTrendingGifs()
+        console.log(trendingGifs) // <--- See the shape of the data
+        setGifs(trendingGifs)
+      }
+  
+      fetchTrending()
+    }, []) // <-- empty dependency array = runs ONLY once
+    useEffect(() => {
+        if (searchTerm) { // Only fetch if searchTerm isn't empty
+          const fetchGifs = async () => {
+            const searchedGifs = await getGifsBySearch(searchTerm)
+            setGifs(searchedGifs)
+          }
+    
+          fetchGifs()
+        }
+      }, [searchTerm]) // <--- run effect when searchTerm changes
+    
+  
     return (
-        <ul>
-
-        </ul>
-    )
+        <div>
+          <GifSearch setSearchTerm={setSearchTerm} />
+          <ul>
+            {gifs.map((gif) => (
+              <li key={gif.id}>
+                <img src={gif.images.original.url} alt={gif.title} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
 }
 
 export default GifContainer
+
+
+
+
+

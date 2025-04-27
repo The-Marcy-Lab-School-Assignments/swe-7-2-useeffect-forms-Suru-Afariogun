@@ -6,15 +6,23 @@ TODO:
 - Complete each adapter function to fetch from the trending/ and search/ endpoints. See the README for the complete endpoint URLs that you will be fetching from.
 */
 import { handleFetch } from './handleFetch.js'
+import API_KEY from '../../config.js'
+
 
 const baseUrl = 'https://api.giphy.com/v1/gifs'
 
 // Send a fetch request to the /trending endpoint and return the top 3 results
 export const getTrendingGifs = async () => {
+    const url = `${baseUrl}/trending?api_key=${API_KEY}&limit=3`
+    const data = await handleFetch(url)
+    return Array.isArray(data?.data) ? data.data : [];
 
 }
 
 // Send a fetch request to the /search endpoint with the given term as a query parameter
 export const getGifsBySearch = async (term) => {
+    const url = `${baseUrl}/search?api_key=${API_KEY}&q=${encodeURIComponent(term)}&limit=10`
+    const data = await handleFetch(url)
+    return Array.isArray(data?.data) ? data.data : [];
 
 }
