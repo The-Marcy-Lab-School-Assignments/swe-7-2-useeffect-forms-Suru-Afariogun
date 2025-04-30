@@ -12,50 +12,50 @@ import defaultGifs from '../gifs.json';
 import { getGifsBySearch, getTrendingGifs } from '../adapters/giphyAdapters';
 import { useEffect, useState } from 'react'// you added this
 //import { getTrendingGifs } from './adapters/giphyAdapters.js' // you added this
-import GifSearch from './GifSearch'
 
+const GifContainer = ({ searchTerm }) => {
+  const [gifs, setGifs] = useState([]);
+  const [error, setError] = useState('');
 
-const GifContainer = () => {
-    const [gifs, setGifs] = useState([])
-    const [searchTerm, setSearchTerm] = useState('')
-    useEffect(() => {
-      const fetchTrending = async () => {
-        const trendingGifs = await getTrendingGifs()
-        console.log(trendingGifs) // <--- See the shape of the data
-        setGifs(trendingGifs)
+  useEffect(() => {
+    const doFetch = async () => {
+      const [gifs, error] = await getTrendingGifs();
+      if (gifs) setGifs(gifs);
+      if (error) {
+        setError(error);
+        setGifs(defaultGifs);
       }
-  
-      fetchTrending()
-    }, []) // <-- empty dependency array = runs ONLY once
-    useEffect(() => {
-        if (searchTerm) { // Only fetch if searchTerm isn't empty
-          const fetchGifs = async () => {
-            const searchedGifs = await getGifsBySearch(searchTerm)
-            setGifs(searchedGifs)
-          }
-    
-          fetchGifs()
-        }
-      }, [searchTerm]) // <--- run effect when searchTerm changes
-    
-  
-    return (
-        <div>
-          <GifSearch setSearchTerm={setSearchTerm} />
-          <ul>
-            {gifs.map((gif) => (
-              <li key={gif.id}>
-                <img src={gif.images.original.url} alt={gif.title} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      )
-}
+    };
+    doFetch();
+  }, []);
 
-export default GifContainer
+  useEffect(() => {
+    if (!searchTerm) {
+      setGifs(defaultGifs);
+      return;
+    }
 
+    const doFetch = async () => {
+      const [gifs, error] = await getGifsBySearch(searchTerm);
+      if (gifs) setGifs(gifs);
+      if (error) {
+        setError(error);
+        setGifs(defaultGifs);
+      }
+    };
 
+    doFetch();
+  }, [searchTerm]);
 
+  return (
+    <ul>
+      {(error ? defaultGifs : gifs).map((gif) => (
+        <li key={gif.id}>
+          <img src={gif.images.original.url} alt={gif.alt_text || 'gif'} />
+        </li>
+      ))}
+    </ul>
+  );
+};
 
-
+export default GifContainer;

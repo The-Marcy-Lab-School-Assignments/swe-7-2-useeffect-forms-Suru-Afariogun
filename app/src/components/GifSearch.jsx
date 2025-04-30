@@ -15,10 +15,10 @@ function GifSearch({ setSearchTerm }) {
     setInputValue(e.target.value)
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault() // prevents page reload
-    setSearchTerm(inputValue) // send the input value up to GifContainer
-  }
+ const handleSubmit = (e) => {
+  e.preventDefault();
+  setSearchTerm(inputValue);
+ }
 
   return (
     <form onSubmit={handleSubmit}>
